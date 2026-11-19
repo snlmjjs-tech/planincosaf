@@ -160,10 +160,9 @@ dialog.small{width:min(420px,92vw);height:auto;padding:18px;border-radius:12px}d
   <section class="card" id="sec-obj">
     <h2><span class="num">2</span> Objetivos</h2>
     <label>Objetivo del módulo<textarea data-k="objModulo" rows="3" placeholder="Objetivo del módulo según el programa de estudio"></textarea></label>
-    <div class="grid-oa">
-      <label>N° de OA de la especialidad<input data-k="oaNum" inputmode="numeric" placeholder="2"></label>
-      <label>Objetivo de Aprendizaje de la especialidad<textarea data-k="oaTexto" rows="4" placeholder="Texto del OA de la especialidad"></textarea></label>
-    </div>
+    <div class="sub">Objetivos de Aprendizaje (OA) de la especialidad <small>Agregue todos los que necesite</small></div>
+    <div id="oaList"></div>
+    <button class="btn add sm" id="btnAddOA" type="button">+ Agregar objetivo de aprendizaje</button>
   </section>
 
   <section id="sec-ae">
@@ -783,11 +782,11 @@ window.EXAMPLE = {
     }) + 16;
     y = para(doc, y, "Objetivo del módulo", { bold: true, size: 9.5, color: C.navy, gap: 4 });
     y = para(doc, y, s.objModulo, { size: 8.5, gap: 8 });
-    if (clean(s.oaTexto) || clean(s.oaNum)) {
-      y = para(doc, y, (/plan general/i.test(s.esp) ? "Objetivo de Aprendizaje" : "Objetivo de Aprendizaje de la especialidad") + (clean(s.oaNum) ? " OA " + clean(s.oaNum) : ""),
+    (s.oas || []).filter((o) => clean(o.texto) || clean(o.num)).forEach((o) => {
+      y = para(doc, y, (/plan general/i.test(s.esp) ? "Objetivo de Aprendizaje" : "Objetivo de Aprendizaje de la especialidad") + (clean(o.num) ? " OA " + clean(o.num) : ""),
         { bold: true, size: 9.5, color: C.navy, gap: 4 });
-      y = para(doc, y, s.oaTexto, { size: 8.5 });
-    }
+      y = para(doc, y, o.texto, { size: 8.5, gap: 8 });
+    });
 
     /* ---- Página 2: OAG ---- */
     doc.addPage();
@@ -894,16 +893,20 @@ window.EXAMPLE = {
 
   const blankAct = () => ({ texto: "", sellos: [], habs: [], mes: "", horas: "" });
   const blankCrit = () => ({ desc: "", oag: [] });
+  const blankOA = () => ({ num: "", texto: "" });
   const blankAE = () => ({ enunciado: "", unidad: "", criterios: [blankCrit()], actividades: [blankAct()] });
   const blankState = () => ({
     esp: "", modulo: "", nivel: "", cursos: "", anio: String(new Date().getFullYear() + (new Date().getMonth() >= 8 ? 1 : 0)),
-    hAnual: "", hSemanal: "", profesor: "", objModulo: "", oaNum: "", oaTexto: "",
+    hAnual: "", hSemanal: "", profesor: "", objModulo: "", oas: [blankOA()],
     aes: [blankAE()], selloOrient: ["", "", "", ""], habAplic: Array(10).fill("")
   });
 
   function normalize(s) {
     const b = blankState();
     const o = Object.assign(b, s || {});
+    if (!(s && s.oas) && s && (s.oaNum || s.oaTexto)) o.oas = [{ num: s.oaNum || "", texto: s.oaTexto || "" }];
+    delete o.oaNum; delete o.oaTexto;
+    o.oas = (o.oas && o.oas.length ? o.oas : [blankOA()]).map((x) => ({ num: x.num || "", texto: x.texto || "" }));
     o.selloOrient = Array.from({ length: 4 }, (_, i) => (o.selloOrient || [])[i] || "");
     o.habAplic = Array.from({ length: 10 }, (_, i) => (o.habAplic || [])[i] || "");
     o.aes = (o.aes && o.aes.length ? o.aes : [blankAE()]).map((a) => ({
@@ -1065,7 +1068,19 @@ window.EXAMPLE = {
     window.HABILIDADES.forEach((x, i) => hb.append(h("label", {}, h("b", {}, x[1]), h("small", {}, x[0]),
       field("textarea", state.habAplic, i, { rows: 2, placeholder: "Aplicación en el módulo" }))));
   }
-  function renderAll() { renderStatic(); renderAEs(); updateHours(); }
+  function renderOAs() {
+    const list = $("#oaList"); list.textContent = "";
+    state.oas.forEach((oa, i) => {
+      list.append(h("div", { class: "row" },
+        h("div", { class: "row-top" }, "OA de la especialidad " + (i + 1),
+          state.oas.length > 1 ? h("button", { class: "x", type: "button", onclick: () => { state.oas.splice(i, 1); renderOAs(); changed(); } }, "Quitar") : null),
+        h("div", { class: "grid-oa" },
+          h("label", {}, "N° de OA", field("input", oa, "num", { inputmode: "numeric", placeholder: "Ej: 2" })),
+          h("label", {}, "Objetivo de Aprendizaje", field("textarea", oa, "texto", { rows: 3, placeholder: "Texto del OA" })))));
+    });
+  }
+  on("#btnAddOA", () => { state.oas.push(blankOA()); renderOAs(); changed(); const t = document.querySelectorAll("#oaList textarea"); t[t.length - 1].focus(); });
+  function renderAll() { renderStatic(); renderOAs(); renderAEs(); updateHours(); }
 
   function updateHours() {
     const tot = state.aes.reduce((s, a) => s + a.actividades.reduce((t, x) => t + (parseFloat(String(x.horas).replace(",", ".")) || 0), 0), 0);
