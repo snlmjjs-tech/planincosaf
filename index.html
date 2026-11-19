@@ -13,13 +13,13 @@
 html{scroll-padding-top:90px}
 body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);background:var(--bg)}
 .topbar{position:sticky;top:0;z-index:20;background:var(--navy);border-bottom:3px solid var(--gold)}
-.topbar-in{max-width:1000px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px}
+.topbar-in{max-width:1480px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px}
 .logo{height:44px;width:auto;border-radius:3px}
 .ttl{display:flex;flex-direction:column;min-width:0;flex:1;color:#fff}
 .ttl strong{font-size:17px;letter-spacing:.2px}
 .ttl span{font-size:12px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .actions{display:flex;gap:8px}
-.wrap{max-width:1000px;margin:0 auto;padding:18px 16px 90px}
+.wrap{max-width:1480px;margin:0 auto;padding:18px 16px 90px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(18,48,79,.05)}
 .intro{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;border-left:5px solid var(--gold)}
 .intro>div:first-child{flex:1 1 420px}
@@ -36,8 +36,8 @@ input,textarea,select{display:block;width:100%;margin-top:4px;padding:9px 10px;f
 textarea{resize:vertical;min-height:40px;line-height:1.4}
 input:focus,textarea:focus,summary:focus-visible,button:focus-visible{outline:3px solid rgba(235,183,0,.55);outline-offset:1px;border-color:var(--navy2)}
 .invalid{border-color:var(--danger)!important;background:#fff6f5}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
-.grid-oa{display:grid;grid-template-columns:150px 1fr;gap:0 16px}
+.grid2{display:grid;grid-template-columns:repeat(3,1fr);gap:0 18px}
+.grid-oa{display:grid;grid-template-columns:130px 1fr;gap:0 16px}
 .suf{display:flex;align-items:center;gap:8px}
 .suf input{width:90px;flex:none}
 .suf i{font-style:normal;font-weight:400;color:var(--muted);font-size:13px;margin-top:4px}
@@ -71,7 +71,7 @@ input:focus,textarea:focus,summary:focus-visible,button:focus-visible{outline:3p
 .chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
 .chip:hover{border-color:var(--navy2)}
 .lbl{font-size:12px;font-weight:600;color:var(--navy);margin-top:8px;display:block}
-.act-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.act-grid{display:grid;grid-template-columns:1.1fr 1.3fr 1fr 110px;gap:0 14px;align-items:start}
 .act-grid .full{grid-column:1/-1}
 .act-grid label{margin:6px 0 0;font-size:12px}
 .hrs{width:90px}
@@ -91,10 +91,10 @@ input:focus,textarea:focus,summary:focus-visible,button:focus-visible{outline:3p
 .stack label small{color:var(--muted);font-weight:400}
 
 .statusbar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:15}
-.statusbar-in{max-width:1000px;margin:0 auto;padding:9px 16px;display:flex;justify-content:space-between;gap:12px;font-size:13px;flex-wrap:wrap}
+.statusbar-in{max-width:1480px;margin:0 auto;padding:9px 16px;display:flex;justify-content:space-between;gap:12px;font-size:13px;flex-wrap:wrap}
 #hoursInfo{font-weight:600;color:var(--navy)} #hoursInfo.warn{color:var(--danger)} #hoursInfo.ok{color:var(--ok)}
 .saved{color:var(--muted)}
-dialog{width:min(1000px,96vw);height:92vh;padding:0;border:0;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+dialog{width:min(1300px,96vw);height:92vh;padding:0;border:0;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 dialog[open]{display:flex;flex-direction:column}
 dialog::backdrop{background:rgba(10,20,35,.6)}
 .dlg-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);gap:8px;color:var(--navy)}
@@ -103,6 +103,7 @@ dialog::backdrop{background:rgba(10,20,35,.6)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .toast.err{background:var(--danger)}
 
+@media (max-width:1100px){.grid2{grid-template-columns:1fr 1fr}.act-grid{grid-template-columns:1fr 1fr}}
 @media (max-width:720px){
   .grid2,.grid-oa,.act-grid{grid-template-columns:1fr}
   .ttl span{display:none}
