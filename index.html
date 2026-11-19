@@ -145,7 +145,7 @@ dialog.small{width:min(420px,92vw);height:auto;padding:18px;border-radius:12px}d
   <section class="card" id="sec-id">
     <h2><span class="num">1</span> Identificación del módulo</h2>
     <div class="grid2">
-      <label>Especialidad <span class="req">*</span><input data-k="esp" placeholder="Ej: Contabilidad"></label>
+      <label>Especialidad <span class="req">*</span><select data-k="esp"><option value="">Seleccione…</option><option>Administración – Logística</option><option>Administración – Recursos Humanos</option><option>Contabilidad</option><option>Conectividad y Redes</option><option>Plan General</option></select></label>
       <label>Módulo <span class="req">*</span><input data-k="modulo" placeholder="Ej: Contabilización de operaciones comerciales"></label>
       <label>Nivel <span class="req">*</span><input data-k="nivel" list="niveles" placeholder="Ej: 3° medio"></label>
       <label>Cursos<input data-k="cursos" placeholder="Ej: 3°A, 3°B"></label>
@@ -784,7 +784,7 @@ window.EXAMPLE = {
     y = para(doc, y, "Objetivo del módulo", { bold: true, size: 9.5, color: C.navy, gap: 4 });
     y = para(doc, y, s.objModulo, { size: 8.5, gap: 8 });
     if (clean(s.oaTexto) || clean(s.oaNum)) {
-      y = para(doc, y, "Objetivo de Aprendizaje de la especialidad" + (clean(s.oaNum) ? " OA " + clean(s.oaNum) : ""),
+      y = para(doc, y, (/plan general/i.test(s.esp) ? "Objetivo de Aprendizaje" : "Objetivo de Aprendizaje de la especialidad") + (clean(s.oaNum) ? " OA " + clean(s.oaNum) : ""),
         { bold: true, size: 9.5, color: C.navy, gap: 4 });
       y = para(doc, y, s.oaTexto, { size: 8.5 });
     }
@@ -1049,6 +1049,7 @@ window.EXAMPLE = {
 
   function renderStatic() {
     document.querySelectorAll("[data-k]").forEach((el) => {
+      if (el.tagName === "SELECT" && state[el.dataset.k] && ![...el.options].some((x) => x.value === state[el.dataset.k] || x.text === state[el.dataset.k])) el.append(h("option", {}, state[el.dataset.k]));
       el.value = state[el.dataset.k] || ""; el.classList.remove("invalid");
       el.oninput = () => { state[el.dataset.k] = el.value; el.classList.remove("invalid"); if (el.tagName === "TEXTAREA") grow(el); changed(); };
       if (el.tagName === "TEXTAREA") requestAnimationFrame(() => grow(el));
