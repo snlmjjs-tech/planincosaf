@@ -1049,7 +1049,11 @@ window.EXAMPLE = {
 
   function renderStatic() {
     document.querySelectorAll("[data-k]").forEach((el) => {
-      if (el.tagName === "SELECT" && state[el.dataset.k] && ![...el.options].some((x) => x.value === state[el.dataset.k] || x.text === state[el.dataset.k])) el.append(h("option", {}, state[el.dataset.k]));
+      if (el.tagName === "SELECT" && state[el.dataset.k]) {
+        const norm = (t) => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[–—-]/g, "-").replace(/\s+/g, " ").trim().toLowerCase();
+        const m = [...el.options].find((x) => x.value && norm(x.value) === norm(state[el.dataset.k]));
+        if (m) state[el.dataset.k] = m.value; else el.append(h("option", {}, state[el.dataset.k]));
+      }
       el.value = state[el.dataset.k] || ""; el.classList.remove("invalid");
       el.oninput = () => { state[el.dataset.k] = el.value; el.classList.remove("invalid"); if (el.tagName === "TEXTAREA") grow(el); changed(); };
       if (el.tagName === "TEXTAREA") requestAnimationFrame(() => grow(el));
